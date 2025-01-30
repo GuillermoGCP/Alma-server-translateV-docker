@@ -14,7 +14,7 @@ import translateText from './translateText.js'
 import executeCommand from './executeCommand.js'
 import translateTitle from './translateTitle.js'
 import translateTextWithPageBreak from './translateTextWithPageBreak.js'
-import correctTranslation from './correcttranslation.js'
+import correctTranslation from './correctTranslation.js'
 import {
   validationSchemaLogin,
   validationSchemaNewCollaborator,
