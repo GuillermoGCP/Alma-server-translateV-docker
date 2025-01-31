@@ -10,12 +10,13 @@ function correctTranslation(text) {
 
     // Correcciones con ajuste de mayúsculas si están después de un punto
     corrected = corrected.replace(
-      /(?:\.)\s*(paira|una|desde)/gi,
+      /(?:\.)\s*(paira|una|desde|sentirche)/gi,
       (_match, word) => {
         const replacements = {
           paira: 'para',
           una: 'unha',
           desde: 'dende',
+          sentirche: 'sentirte',
         }
         const newWord = replacements[word.toLowerCase()]
         return '.' + ' ' + newWord.charAt(0).toUpperCase() + newWord.slice(1)

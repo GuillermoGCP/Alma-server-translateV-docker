@@ -19,7 +19,7 @@ const getExperiences = async (_req, res, next) => {
             es: experience[1],
             gl: await translateTextWithPageBreak(experience[1], 'es-gl'),
           },
-          image: experience[2],
+          image: experience[3],
         }
       })
     )
