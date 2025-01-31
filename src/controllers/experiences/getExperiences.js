@@ -17,7 +17,7 @@ const getExperiences = async (_req, res, next) => {
           id: experience[0],
           text: {
             es: experience[1],
-            gl: await translateTextWithPageBreak(experience[1], 'es-gl'),
+            gl: experience[2],
           },
           image: experience[3],
         }
