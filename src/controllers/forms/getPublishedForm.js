@@ -1,5 +1,5 @@
-import FormModel from '../../Database/models/FormModel.js'
-import { generateError } from '../../utils/index.js'
+import FormModel from '../../Database/models/FormModel2.js'
+import { generateError, unnormalizeFieldName } from '../../utils/index.js'
 
 const getPublishedForm = async (req, res, next) => {
   try {
@@ -18,10 +18,29 @@ const getPublishedForm = async (req, res, next) => {
         'Formulario no encontrado para el número de publicación dado.'
       )
     }
+    const normalizedForm = {
+      ...formFromData,
+      formName: {
+        es: unnormalizeFieldName(formFromData.formName.es),
+        gl: unnormalizeFieldName(formFromData.formName.gl),
+      },
+      fields: formFromData.fields.map((field) => {
+        if (field.type === 'select') {
+          return field
+        } else
+          return {
+            type: field.type,
+            label: {
+              es: unnormalizeFieldName(field.label.es),
+              gl: unnormalizeFieldName(field.label.gl),
+            },
+          }
+      }),
+    }
 
     res.send({
       message: 'Formulario publicado obtenido',
-      form: formFromData,
+      form: normalizedForm,
     })
   } catch (error) {
     next(error)

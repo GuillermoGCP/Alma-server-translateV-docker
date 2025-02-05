@@ -62,9 +62,8 @@ const updateForm = async (req, res, next) => {
     // //Creo el objeto combinado:
     const inverse = true
     const updatedFormData = {
-      formId: rowsData[0][0],
-      formName:
-        formData.formName || normalizeFieldName(rowsData[0][1], inverse),
+      formId: formData.formId,
+      formName: formData.formName,
       fields: formData.fields,
     }
 
@@ -156,6 +155,7 @@ const updateForm = async (req, res, next) => {
       apdatedForm: dataToSend,
     })
   } catch (error) {
+    console.log(error)
     next(error)
   }
 }

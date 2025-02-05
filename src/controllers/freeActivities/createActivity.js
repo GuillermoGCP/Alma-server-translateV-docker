@@ -51,6 +51,8 @@ const createActivity = async (req, res, next) => {
         private: {
           ...req.body.extendedProperties.private,
           image: image,
+          glDescription: await translateTextWithPageBreak(description, 'es-gl'),
+          glSummary: await translateTextWithPageBreak(summary, 'es-gl'),
         },
       },
     })
@@ -69,8 +71,8 @@ const createActivity = async (req, res, next) => {
         accessDataSheet,
         'confirmed',
         image,
-        await translateTextWithPageBreak(description, 'es-gl'),
-        await translateTextWithPageBreak(summary, 'es-gl'),
+        response.extendedProperties.private.glDescription,
+        response.extendedProperties.private.glSummary,
       ],
     ]
 

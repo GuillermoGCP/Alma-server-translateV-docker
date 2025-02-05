@@ -16,7 +16,6 @@ const getExperienceById = async (req, res, next) => {
     const { rowsData } = values
 
     const experience = groupDataById(rowsData)
-    console.log('experience', experience)
     //Formateo los datos:
     //Los campos no se corresponden con los nombres, porque la función groupDataById está pensada para agrupar los datos de los formularios.
     const dataToSend = {

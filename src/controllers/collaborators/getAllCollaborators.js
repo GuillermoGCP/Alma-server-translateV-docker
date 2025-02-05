@@ -27,6 +27,16 @@ const getAllCollaborators = async (req, res, next) => {
         image: collaborator[5],
       }
     })
+    // const dataToSend = rows.slice(1).map((collaborator) => {
+    //   return {
+    //     id: collaborator[0],
+    //     name: collaborator[1],
+    //     surname: collaborator[2],
+    //     description: collaborator[3],
+    //     role: collaborator[4],
+    //     image: collaborator[5],
+    //   }
+    // })
 
     res.send({
       message: `${sheetName} obtenidos correctamente`,

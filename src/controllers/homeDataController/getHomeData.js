@@ -1,4 +1,4 @@
-import HomeModel from '../../Database/models/HomeModel.js'
+import HomeModel from '../../Database/models/HomeModel2.js'
 
 const getHomeData = async (_req, res, next) => {
   try {

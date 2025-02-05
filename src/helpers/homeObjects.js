@@ -1,8 +1,4 @@
-import {
-  translateText,
-  translateTitle,
-  translateTextWithPageBreak,
-} from '../utils/index.js'
+import { translateText, translateTextWithPageBreak } from '../utils/index.js'
 
 const newHomeObjectCreator = async (imageHome, logo, data) => {
   return {
@@ -32,7 +28,7 @@ const newHomeObjectCreator = async (imageHome, logo, data) => {
       lactationResources: data.library.lactationResources
         ? await Promise.all(
             data.library.lactationResources.map(async (item) => {
-              return await translateTitle(item)
+              return await translateTextWithPageBreak(item)
             })
           )
         : {},
@@ -42,7 +38,7 @@ const newHomeObjectCreator = async (imageHome, logo, data) => {
       pregnancyResources: data.library.pregnancyResources
         ? await Promise.all(
             data.library.pregnancyResources.map((item) => {
-              return translateTitle(item)
+              return translateTextWithPageBreak(item)
             })
           )
         : {},
@@ -52,7 +48,7 @@ const newHomeObjectCreator = async (imageHome, logo, data) => {
       parentingResources: data.library.parentingResources
         ? await Promise.all(
             data.library.parentingResources.map((item) => {
-              return translateTitle(item)
+              return translateTextWithPageBreak(item)
             })
           )
         : {},
@@ -62,7 +58,7 @@ const newHomeObjectCreator = async (imageHome, logo, data) => {
       nutritionBlogs: data.library.nutritionBlogs
         ? await Promise.all(
             data.library.nutritionBlogs.map((item) => {
-              return translateTitle(item)
+              return translateTextWithPageBreak(item)
             })
           )
         : {},
@@ -72,7 +68,7 @@ const newHomeObjectCreator = async (imageHome, logo, data) => {
       archiveBlogs: data.library.archiveBlogs
         ? await Promise.all(
             data.library.archiveBlogs.map((item) => {
-              return translateTitle(item)
+              return translateTextWithPageBreak(item)
             })
           )
         : {},
@@ -86,13 +82,19 @@ const combinedHomeObjectCreator = async (imageHome, logo, oldData, newData) => {
       titleHome: newData.home?.titleHome
         ? {
             es: newData.home.titleHome,
-            gl: await translateText(newData.home.titleHome, 'es-gl'),
+            gl: await translateTextWithPageBreak(
+              newData.home.titleHome,
+              'es-gl'
+            ),
           }
         : oldData.home.titleHome,
       sectionText: newData.home?.sectionText
         ? {
             es: newData.home.sectionText,
-            gl: await translateText(newData.home.sectionText, 'es-gl'),
+            gl: await translateTextWithPageBreak(
+              newData.home.sectionText,
+              'es-gl'
+            ),
           }
         : oldData.home.sectionText,
     },
@@ -105,7 +107,7 @@ const combinedHomeObjectCreator = async (imageHome, logo, oldData, newData) => {
       lactationResources: newData.library?.lactationResources
         ? await Promise.all(
             newData.library.lactationResources.map((item) => {
-              return translateTitle(item)
+              return translateTextWithPageBreak(item)
             })
           )
         : oldData.library.lactationResources,
@@ -115,7 +117,7 @@ const combinedHomeObjectCreator = async (imageHome, logo, oldData, newData) => {
       pregnancyResources: newData.library?.pregnancyResources
         ? await Promise.all(
             newData.library.pregnancyResources.map((item) => {
-              return translateTitle(item)
+              return translateTextWithPageBreak(item)
             })
           )
         : oldData.library.pregnancyResources,
@@ -125,7 +127,7 @@ const combinedHomeObjectCreator = async (imageHome, logo, oldData, newData) => {
       parentingResources: newData.library?.parentingResources
         ? await Promise.all(
             newData.library.parentingResources.map((item) => {
-              return translateTitle(item)
+              return translateTextWithPageBreak(item)
             })
           )
         : oldData.library.parentingResources,
@@ -135,7 +137,7 @@ const combinedHomeObjectCreator = async (imageHome, logo, oldData, newData) => {
       nutritionBlogs: newData.library?.nutritionBlogs
         ? await Promise.all(
             newData.library.nutritionBlogs.map((item) => {
-              return translateTitle(item)
+              return translateTextWithPageBreak(item)
             })
           )
         : oldData.library.nutritionBlogs,
@@ -145,7 +147,7 @@ const combinedHomeObjectCreator = async (imageHome, logo, oldData, newData) => {
       archiveBlogs: newData.library?.archiveBlogs
         ? await Promise.all(
             newData.library.archiveBlogs.map((item) => {
-              return translateTitle(item)
+              return translateTextWithPageBreak(item)
             })
           )
         : oldData.library.archiveBlogs,
