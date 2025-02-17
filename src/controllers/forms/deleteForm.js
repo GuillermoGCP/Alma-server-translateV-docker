@@ -18,6 +18,7 @@ const deleteForm = async (req, res, next) => {
       try {
         const spreadsheetIdForms = process.env.SPREADSHEET_ID_FORMS
         const sheetId = await getSheetId(spreadsheetIdForms, sheetName)
+        console.log('id', sheetId)
         await deleteSheet(spreadsheetIdForms, sheetId)
       } catch (error) {}
     }
@@ -32,7 +33,10 @@ const deleteForm = async (req, res, next) => {
 
     const values = await getValues(spreadsheetId, 'Formularios', fields)
     const { rowsToDelete } = values
-    console.log('vamos', rowsToDelete)
+
+    //Invertir el orden de los elementos para evitar errores en el borrado:
+    rowsToDelete.reverse()
+
     for (let row of rowsToDelete) {
       await deleteRow(row)
     }
