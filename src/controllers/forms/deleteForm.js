@@ -32,7 +32,7 @@ const deleteForm = async (req, res, next) => {
 
     const values = await getValues(spreadsheetId, 'Formularios', fields)
     const { rowsToDelete } = values
-
+    console.log('vamos', rowsToDelete)
     for (let row of rowsToDelete) {
       await deleteRow(row)
     }
