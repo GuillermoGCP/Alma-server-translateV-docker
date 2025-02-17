@@ -21,10 +21,14 @@ const checkIsPublished = async (req, res, next) => {
         isPublished = false
       }
     } else {
-      if (Object.keys(jsonData).length === 0) {
-        isPublished = false
-      } else {
-        isPublished = true
+      try {
+        if (Object.keys(jsonData).length === 0) {
+          isPublished = false
+        } else {
+          isPublished = true
+        }
+      } catch (error) {
+        console.error('No hay formulario asociado')
       }
     }
 

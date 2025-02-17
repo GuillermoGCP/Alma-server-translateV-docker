@@ -36,7 +36,7 @@ const getFormById = async (req, res, next) => {
         }
       }),
     }
-    console.log('dataToSend', dataToSend)
+
     //Si se publica, se comprueba si existe publicación anterior con el mismo json number, se borra y se guarda en Mongo la nueva:
     if (publish === 'publish') {
       const match = await FormModel.exists({ publishNumber: jsonNumber })

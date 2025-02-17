@@ -1,14 +1,15 @@
 import express from 'express'
 import {
-    createFormController,
-    saveFormResponses,
-    getAllForms,
-    getFormById,
-    getPublishedForm,
-    unpublishForm,
-    deleteForm,
-    checkIsPublished,
-    updateForm,
+  createFormController,
+  saveFormResponses,
+  getAllForms,
+  getFormById,
+  getPublishedForm,
+  unpublishForm,
+  deleteForm,
+  checkIsPublished,
+  updateForm,
+  getAllPublishedForms,
 } from '../controllers/index.js'
 const router = express.Router()
 
@@ -19,10 +20,11 @@ router.delete('/delete-form/:formId/:deleteSheet?/:sheetName?', deleteForm)
 router.get('/get-all-forms', getAllForms)
 router.get('/get-form/:formId/:publish?/:jsonNumber?', getFormById)
 router.get('/get-published-form/:jsonNumber', getPublishedForm)
+router.get('/get-all-published-forms', getAllPublishedForms)
 router.get('/unpublish-form/:jsonNumber', unpublishForm)
 router.get(
-    '/check-is-published/:formId/:jsonNumber/:checkIsFile?',
-    checkIsPublished
+  '/check-is-published/:formId/:jsonNumber/:checkIsFile?',
+  checkIsPublished
 )
 router.post('/submit-form/:sheetName', saveFormResponses)
 

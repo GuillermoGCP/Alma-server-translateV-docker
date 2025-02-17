@@ -43,7 +43,7 @@ const getPublishedForm = async (req, res, next) => {
       form: normalizedForm,
     })
   } catch (error) {
-    next(error)
+    // next(error)
   }
 }
 

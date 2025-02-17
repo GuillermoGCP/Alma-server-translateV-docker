@@ -5,7 +5,11 @@ import {
   allSheetData,
   updateRow,
 } from '../../googleapis/methods/index.js'
-import { getColumnLetter, normalizeFieldName } from '../../utils/index.js'
+import {
+  getColumnLetter,
+  normalizeFieldName,
+  unnormalizeFieldName,
+} from '../../utils/index.js'
 
 const createFormController = async (req, res, next) => {
   try {
@@ -44,8 +48,8 @@ const createFormController = async (req, res, next) => {
         return {
           type: arr[3],
           label: {
-            es: arr[2],
-            gl: arr[5],
+            es: unnormalizeFieldName(arr[2]),
+            gl: unnormalizeFieldName(arr[5]),
           },
         }
       }),
