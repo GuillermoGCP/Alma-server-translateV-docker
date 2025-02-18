@@ -36,12 +36,12 @@ const getFormById = async (req, res, next) => {
         }
       }),
     }
-    console.log('dataToSend', dataToSend)
+
     //Si se publica, se comprueba si existe publicación anterior con el mismo json number, se borra y se guarda en Mongo la nueva:
     if (publish === 'publish') {
-      const match = await FormModel.exists({ publishNumber: 1 })
+      const match = await FormModel.exists({ publishNumber: jsonNumber })
       if (match) {
-        await FormModel.deleteOne({ publishNumber: 1 })
+        await FormModel.deleteOne({ publishNumber: jsonNumber })
         console.log('Borrada publicación anterior')
       }
       formToSave = new FormModel(dataToSend)

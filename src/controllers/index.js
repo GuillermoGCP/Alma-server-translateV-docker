@@ -26,6 +26,7 @@ import saveFormResponses from './forms/saveFormResponses.js'
 import getAllForms from './forms/getAllForms.js'
 import getFormById from './forms/getFormById.js'
 import getPublishedForm from './forms/getPublishedForm.js'
+import getAllPublishedForms from './forms/getAllPublishedForms.js'
 import unpublishForm from './forms/unpublishForm.js'
 import deleteForm from './forms/deleteForm.js'
 import checkIsPublished from './forms/checkIsPublished.js'
@@ -75,6 +76,7 @@ export {
   getAllForms,
   getFormById,
   getPublishedForm,
+  getAllPublishedForms,
   unpublishForm,
   deleteForm,
   checkIsPublished,
