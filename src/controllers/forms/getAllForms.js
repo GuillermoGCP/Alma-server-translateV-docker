@@ -12,41 +12,6 @@ const getAllForms = async (req, res, next) => {
     // Agrupo los formularios por id:
     const groupedData = groupDataById(rows)
 
-    //TEMPORAL. Luego dejar solo el groupedData:
-    // const dataToSend = {
-    //   id: {
-    //     formName: {
-    //       es: 'Nombre formulario',
-    //       gl: 'Nombre gl',
-    //     },
-    //     fields: [
-    //       {
-    //         label: {
-    //           es: 'Campo',
-    //           gl: 'Campo gl',
-    //         },
-    //         type: 'Tipo',
-    //       },
-    //     ],
-    //   },
-    //   '03e312f3-988b-42cd-8e16-35f9e9cd87ef': {
-    //     formName:
-    //       groupedData['03e312f3-988b-42cd-8e16-35f9e9cd87ef'].formName.es,
-    //     fields: [
-    //       {
-    //         label: 'Titulo principal nuevo',
-
-    //         type: 'text',
-    //       },
-    //       {
-    //         label: 'Titulo secundario nuevo',
-
-    //         type: 'text',
-    //       },
-    //     ],
-    //   },
-    // }
-
     res.send({
       message: 'formularios obtenidos',
       forms: groupedData,

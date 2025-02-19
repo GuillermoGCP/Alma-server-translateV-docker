@@ -24,6 +24,7 @@ import {
   validationUpdateExperiences,
   validationSchemaNewPartner,
   validationSchemaRenewPartner,
+  validationSchemaCodePartner,
 } from './validation.js'
 
 export {
@@ -54,4 +55,5 @@ export {
   translateTitle,
   translateTextWithPageBreak,
   correctTranslation,
+  validationSchemaCodePartner,
 }

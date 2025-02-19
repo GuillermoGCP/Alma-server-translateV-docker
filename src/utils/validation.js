@@ -83,9 +83,17 @@ const validationSchemaNewPartner = Joi.object({
 })
 
 //Renovación de socios:
-
 const validationSchemaRenewPartner = Joi.object({
   id: Joi.string().max(4).required(),
+  email: Joi.string().email().required(),
+})
+
+//Código acceso actividades de socios:
+const validationSchemaCodePartner = Joi.object({
+  code: Joi.string()
+    .length(4)
+    .regex(/^[a-zA-Z0-9]{4}$/)
+    .required(),
   email: Joi.string().email().required(),
 })
 
@@ -98,7 +106,6 @@ const validationUpdateExperiences = Joi.object({
   image: Joi.string(),
 })
 
-//Exporto las variables:
 export {
   validationSchemaLogin,
   validationSchemaNewCollaborator,
@@ -108,4 +115,5 @@ export {
   validationUpdateExperiences,
   validationSchemaNewPartner,
   validationSchemaRenewPartner,
+  validationSchemaCodePartner,
 }
