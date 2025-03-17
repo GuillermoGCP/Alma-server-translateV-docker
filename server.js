@@ -32,9 +32,7 @@ app.set('trust proxy', 1) //Por si Vercel actúa como proxy (solo depliegue)
 const whitelist = [
   'http://localhost:5173',
   'http://localhost:5174',
-  'https://alma-web-one.vercel.app',
-  'https://alma-lactancia-web.vercel.app',
-  'https://alma-lactancia-web3.vercel.app',
+  'https://alma-web-rho.vercel.app',
 ]
 
 const corsOptions = {
