@@ -227,6 +227,31 @@ Required fields (in JSON format):
 
   _All fields are required._
 
+Path to get past activities:
+Method: get,
+Path: `/past-activities`
+Required fields: none
+Example response:
+
+```
+{
+  "message": "Actividades pasadas obtenidas",
+  "data": [
+    {
+      "id": "abc123",
+      "summary": "Taller",
+      "description": "Sesión de apoyo",
+      "start": "2024-09-01T10:00:00.000Z",
+      "end": "2024-09-01T12:00:00.000Z",
+      "location": "Centro",
+      "access": "libre",
+      "status": "confirmed",
+      "image": "https://example.com/image.jpg"
+    }
+  ]
+}
+```
+
 **contact**
 Path to save contact data:
 Method: post,

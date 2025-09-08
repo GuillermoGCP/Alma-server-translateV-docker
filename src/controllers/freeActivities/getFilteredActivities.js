@@ -29,6 +29,8 @@ const getFilteredActivities = async (req, res, next) => {
             end: parseCustomDateToISO(row[4]),
             location: row[5],
             access: row[6],
+            status: row[7],
+            image: row[8],
         }))
 
         // Filtrar las actividades según los parámetros
@@ -90,4 +92,41 @@ const getFilteredActivities = async (req, res, next) => {
     }
 }
 
+const getPastActivities = async (req, res, next) => {
+    try {
+        const sheetId = process.env.SPREADSHEET_ID
+        const response = await allSheetData(sheetId, 'Actividades')
+        const { rows } = response
+
+        const activities = rows.slice(1).map((row) => ({
+            id: row[0],
+            summary: row[1],
+            description: row[2],
+            start: parseCustomDateToISO(row[3]),
+            end: parseCustomDateToISO(row[4]),
+            location: row[5],
+            access: row[6],
+            status: row[7],
+            image: row[8],
+        }))
+
+        const now = Date.now()
+        const pastActivities = activities.filter(
+            (activity) => new Date(activity.end).getTime() < now
+        )
+
+        if (pastActivities.length === 0)
+            generateError('No hay actividades pasadas')
+
+        res.json({
+            message: 'Actividades pasadas obtenidas',
+            data: pastActivities,
+        })
+    } catch (error) {
+        console.log(error)
+        next(error)
+    }
+}
+
+export { getPastActivities }
 export default getFilteredActivities
