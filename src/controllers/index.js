@@ -18,7 +18,9 @@ import googleSignIn from './googleSignIn/googleSignIn.js'
 import checkSession from './googleSignIn/checkSession.js'
 import logout from './googleSignIn/logout.js'
 
-import getFilteredActivities from './freeActivities/getFilteredActivities.js'
+import getFilteredActivities, {
+  getPastActivities,
+} from './freeActivities/getFilteredActivities.js'
 import createActivity from './freeActivities/createActivity.js'
 
 import createFormController from './forms/createFormController.js'
@@ -72,6 +74,7 @@ export {
   checkSession,
   logout,
   getFilteredActivities,
+  getPastActivities,
   createFormController,
   saveFormResponses,
   getAllForms,
