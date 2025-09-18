@@ -12,3 +12,8 @@ src/assets/forms/*
 src/assets/images/*
 src/assets/instagramPosts/*
 !src/assets/images/.gitkeep
+
+.vscode
+
+Deploy.txt
+.vscode
