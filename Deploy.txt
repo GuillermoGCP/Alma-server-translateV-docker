@@ -1,0 +1,18 @@
+
+Con la extensión de SFTP:
+Ctrl/Cmd+Shift+P → escribe SFTP: Config → Enter. para configurar
+Ctrl/Cmd+Shift+P → SFTP: Sync Local → Remote para subir todos los archivos. 
+
+SFTP: Sync Local → Remote (sube cambios a ~/www/api).
+
+Comandos para conectar al hosting (SSH): 
+ssh almalactancia@hl1499.dinaserver.com -p 22
+
+Si se cambiaron deps: 
+cd ~/www/api
+npx -y pnpm@9 install
+
+
+Panel → Otras aplicaciones → tu app → Logs (arranque/errores).
+Si quieres log mínimo por SSH:
+tail -n 100 -f ~/logs/error.log
