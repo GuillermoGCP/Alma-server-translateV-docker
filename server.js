@@ -1,10 +1,9 @@
 import express from 'express'
-import dotenv from 'dotenv/config'
+import 'dotenv/config'
 import { join } from 'path'
 import conectDb from './src/Database/config.js'
-// import cloudinary from './src/utils/cloudinaryConfig.js'
 import cors from 'cors'
-import { logRequests, sessionMiddleware } from './src/middlewares/index.js'
+import { sessionMiddleware } from './src/middlewares/index.js'
 import {
   activities,
   login,
@@ -23,16 +22,15 @@ import { setupCronJobs } from './src/utils/index.js'
 //Crear instancia de Express:
 const app = express()
 
-//Tareas programadas:
-setupCronJobs()
-
-app.set('trust proxy', 1) //Por si Vercel actúa como proxy (solo depliegue)
+app.set('trust proxy', 1) //Por si Vercel actúa como proxy (solo depliegue) o Passenger para X-Forwarded-*
 
 //Direcciones permitidas:
 const whitelist = [
   'http://localhost:5173',
   'http://localhost:5174',
   'https://alma-web-rho.vercel.app',
+  'https://almalactancia.org',
+  'https://www.almalactancia.org',
 ]
 
 const corsOptions = {
@@ -44,6 +42,7 @@ const corsOptions = {
     }
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 }
 
 app.use(cors(corsOptions))
@@ -68,7 +67,6 @@ const ruta = join(__dirname, 'src', 'assets', 'images')
 app.use('/images', express.static(ruta))
 
 // Rutas
-// app.use(logRequests) //Para registrar las peticiones que entran:
 app.use(activities)
 app.use(login)
 app.use(calendar)
@@ -80,11 +78,27 @@ app.use(experiences)
 app.use(instagram)
 app.use(partners)
 
+// Healthcheck (útil para probar rápido)
+app.get('/health', (_req, res) => res.json({ ok: true }))
+
 //Middlewares
 app.use(notFound)
 app.use(manageError)
 
-//Server:
-app.listen(process.env.PORT, () => {
-  console.log(`Servidor activo en el puerto ${process.env.PORT}`)
+if (!global.__CRONS_STARTED__) {
+  try {
+    setupCronJobs()
+    global.__CRONS_STARTED__ = true
+  } catch (e) {
+    console.error('Error al iniciar cron jobs:', e)
+  }
+}
+
+// ====== Arranque (Passenger en producción) ======
+const onPassenger = typeof PhusionPassenger !== 'undefined'
+const port = onPassenger ? 'passenger' : process.env.PORT || 3001
+app.listen(port, () => {
+  console.log(
+    `Servidor activo (${onPassenger ? 'Passenger' : `local:${port}`})`
+  )
 })
