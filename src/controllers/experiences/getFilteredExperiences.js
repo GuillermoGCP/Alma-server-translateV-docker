@@ -5,46 +5,34 @@ const getFilteredExperiences = async (req, res, next) => {
   try {
     const spreadsheetId = process.env.SPREADSHEET_ID
     if (!spreadsheetId) {
-      return res.status(200).json({
-        message: 'SPREADSHEET_ID no configurado',
-        data: [],
-      })
+      return res
+        .status(200)
+        .json({ message: 'SPREADSHEET_ID no configurado', data: [] })
     }
 
-    // Si no hay documento o el campo no es array, usa []
     const doc = await FilteredExperiencesModel.findOne().lean()
+
     const ids = Array.isArray(doc?.filteredExperiences)
       ? doc.filteredExperiences
       : []
-
     if (ids.length === 0) {
-      return res.status(200).json({
-        message: 'Sin experiencias filtradas configuradas',
-        data: [],
-      })
+      return res
+        .status(200)
+        .json({ message: 'Sin experiencias configuradas', data: [] })
     }
 
     const experiences = await Promise.all(
       ids.map(async (experienceId) => {
         try {
-          const fields = {
+          const values = await getRowsData(spreadsheetId, 'Experiencias', {
             field: 'id',
             value: String(experienceId),
             sheetName: 'Experiencias',
-          }
+          })
+          const row = values?.rowsData?.[0]
+          if (!row) return null
 
-          const values = await getRowsData(
-            spreadsheetId,
-            'Experiencias',
-            fields
-          )
-          const rowsData = values?.rowsData ?? []
-          const row = rowsData[0]
-          if (!row) return null // id no encontrado en la hoja
-
-          // Asumiendo columnas: [id, es, gl, image]
           const [id, es, gl, image] = row
-
           return {
             id,
             text: { es: es ?? '', gl: gl ?? '' },
@@ -57,12 +45,9 @@ const getFilteredExperiences = async (req, res, next) => {
       })
     )
 
-    const clean = experiences.filter(Boolean)
-
-    return res.status(200).json({
-      message: 'Experiencias filtradas obtenidas',
-      data: clean,
-    })
+    return res
+      .status(200)
+      .json({ message: 'OK', data: experiences.filter(Boolean) })
   } catch (error) {
     next(error)
   }

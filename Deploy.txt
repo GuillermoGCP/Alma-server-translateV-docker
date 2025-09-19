@@ -16,3 +16,7 @@ npx -y pnpm@9 install
 Panel → Otras aplicaciones → tu app → Logs (arranque/errores).
 Si quieres log mínimo por SSH:
 tail -n 100 -f ~/logs/error.log
+
+
+Abrir rutas desde consola para testing:
+curl -sS -i "https://api.almalactancia.org/get-filtered-experiences"
