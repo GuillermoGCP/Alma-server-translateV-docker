@@ -2,16 +2,34 @@ import FilteredExperiencesModel from '../../Database/models/FilteredExperiencesM
 import { getRowsData } from '../../googleapis/methods/index.js'
 
 const getFilteredExperiences = async (req, res, next) => {
-  const spreadsheetId = process.env.SPREADSHEET_ID
   try {
-    const filteredExperiencesFromDb = await FilteredExperiencesModel.findOne()
+    const spreadsheetId = process.env.SPREADSHEET_ID
+    if (!spreadsheetId) {
+      return res.status(200).json({
+        message: 'SPREADSHEET_ID no configurado',
+        data: [],
+      })
+    }
 
-    const experiencesToSend = Promise.all(
-      filteredExperiencesFromDb.filteredExperiences.map(
-        async (experienceId) => {
+    // Si no hay documento o el campo no es array, usa []
+    const doc = await FilteredExperiencesModel.findOne().lean()
+    const ids = Array.isArray(doc?.filteredExperiences)
+      ? doc.filteredExperiences
+      : []
+
+    if (ids.length === 0) {
+      return res.status(200).json({
+        message: 'Sin experiencias filtradas configuradas',
+        data: [],
+      })
+    }
+
+    const experiences = await Promise.all(
+      ids.map(async (experienceId) => {
+        try {
           const fields = {
             field: 'id',
-            value: experienceId.toString(),
+            value: String(experienceId),
             sheetName: 'Experiencias',
           }
 
@@ -20,31 +38,34 @@ const getFilteredExperiences = async (req, res, next) => {
             'Experiencias',
             fields
           )
-          const { rowsData } = values
+          const rowsData = values?.rowsData ?? []
+          const row = rowsData[0]
+          if (!row) return null // id no encontrado en la hoja
 
-          const readyData = {
-            text: {
-              es: rowsData[0][1],
-              gl: rowsData[0][2],
-            },
-            id: rowsData[0][0],
-            image: rowsData[0][3],
+          // Asumiendo columnas: [id, es, gl, image]
+          const [id, es, gl, image] = row
+
+          return {
+            id,
+            text: { es: es ?? '', gl: gl ?? '' },
+            image: image || 'Sin imagen',
           }
-
-          return readyData
+        } catch (e) {
+          console.error('Fallo leyendo hoja para id', experienceId, e?.message)
+          return null
         }
-      )
+      })
     )
-    const readyExperiencesTosend = await experiencesToSend
 
-    res.send({
-      message: `Experiencias filtradas, obtenidas`,
-      data: readyExperiencesTosend,
+    const clean = experiences.filter(Boolean)
+
+    return res.status(200).json({
+      message: 'Experiencias filtradas obtenidas',
+      data: clean,
     })
   } catch (error) {
-    console.log(error)
-
     next(error)
   }
 }
+
 export default getFilteredExperiences
