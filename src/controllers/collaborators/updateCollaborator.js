@@ -4,168 +4,151 @@ import { updateRow, getRowsData } from '../../googleapis/methods/index.js'
 import cloudinaryUpload from '../cloudinary/uploadImage.js'
 import cloudinaryDelete from '../cloudinary/deleteImage.js'
 
+const safeTranslate = async (text) => {
+  if (!text) return ''
+  try {
+    const out = await translateTextWithPageBreak(text)
+    return typeof out === 'string' ? out : ''
+  } catch {
+    // Fallback duro: sin traducción
+    return ''
+  }
+}
+
 const updateCollaborator = async (req, res, next) => {
   try {
     const spreadSheetId = process.env.SPREADSHEET_ID
     const { id, team } = req.params
 
-    let sheetName
-    let oldData
-    let mergedObject = {}
-    let fields
-    const fieldsToUpdate = req.body
-    let newData
-    let newValuesArray
-    let dataToValidate
-    let dataToUpdate
+    if (!spreadSheetId) {
+      return res
+        .status(500)
+        .json({ message: 'Config error: falta SPREADSHEET_ID' })
+    }
+
+    const isTeam = String(team) === 'true'
+    const sheetName = isTeam ? 'Miembros' : 'Colaboradores'
+
+    const fieldsToUpdate = req.body ?? {}
     let newImage = ''
 
-    //Si envías una nueva foto, se actualiza en cloudinary:
+    // 1) Subida de imagen (opcional)
     if (req.file) {
       try {
         const response = await cloudinaryUpload(req.file, 'collaborators')
         newImage = response
       } catch (error) {
-        console.error('Error al actualizar:', error.message)
+        console.error('Error al subir imagen:', error.message)
         generateError(error.message)
       }
     }
 
-    //Actualizar colaborador:
-    if (team === 'false') {
-      sheetName = 'Colaboradores'
-      fields = {
-        field: 'id',
-        value: id,
-        newValue: '',
-        sheetName: sheetName,
-      }
-
-      oldData = await getRowsData(spreadSheetId, sheetName, fields)
-      const { rowData, headers } = oldData
-
-      if (oldData.error) {
-        generateError(oldData.error)
-        return
-      }
-
-      for (let i = 0; i < headers.length; i++) {
-        mergedObject[headers[i]] = rowData[i]
-      }
-
-      //Traducciones de los nuevos campos, si existen
-      if (fieldsToUpdate.description) {
-        mergedObject.description_gl = await translateTextWithPageBreak(
-          fieldsToUpdate.description
-        )
-      }
-      if (fieldsToUpdate.role) {
-        mergedObject.role_gl = await translateTextWithPageBreak(
-          fieldsToUpdate.role
-        )
-      }
-
-      //Se actualizan los datos en un objeto:
-      newData = {
-        ...mergedObject,
-        ...fieldsToUpdate,
-        collaboratorImage: newImage ? newImage : 'Sin imagen',
-      }
-
-      //Se borra la anterior imagen de Cloudinary:
-      if (oldData.collaboratorImage !== 'Sin imagen')
-        cloudinaryDelete(oldData.rowData[5])
-
-      //Se preparan con el formato que necesita la API de Google:
-      newValuesArray = Object.entries(newData).map(([key, value]) => value)
-
-      dataToUpdate = await getRowsData(
-        spreadSheetId,
-        sheetName,
-        fields,
-        newValuesArray
-      )
-      const { rowToUpdate } = dataToUpdate
-      await updateRow(rowToUpdate)
+    // 2) Cargar fila actual
+    const lookup = {
+      field: 'id',
+      value: id,
+      newValue: '',
+      sheetName,
     }
 
-    //Actualizar miembro del equipo:
-    if (team === 'true') {
-      sheetName = 'Miembros'
-      fields = {
-        field: 'id',
-        value: id,
-        newValue: '',
-        sheetName: sheetName,
-      }
-
-      oldData = await getRowsData(spreadSheetId, sheetName, fields)
-      const { rowData, headers } = oldData
-
-      for (let i = 0; i < headers.length; i++) {
-        mergedObject[headers[i]] = rowData[i]
-      }
-
-      //Traducciones de los nuevos campos, si existen
-      if (fieldsToUpdate.description) {
-        mergedObject.description_gl = await translateTextWithPageBreak(
-          fieldsToUpdate.description
-        )
-      }
-      if (fieldsToUpdate.role) {
-        mergedObject.role_gl = await translateTextWithPageBreak(
-          fieldsToUpdate.role
-        )
-      }
-      //Se actualizan los datos en un objeto:
-      newData = {
-        ...mergedObject,
-        ...fieldsToUpdate,
-        collaboratorImage: newImage ? newImage : 'Sin imagen',
-      }
-
-      //Se borra la anterior imagen de Cloudinary:
-      if (oldData.collaboratorImage !== 'Sin imagen')
-        cloudinaryDelete(oldData.rowData[5])
-
-      //Se preparan con el formato que necesita la API de Google:
-      newValuesArray = Object.entries(newData).map(([key, value]) => value)
-      dataToUpdate = await getRowsData(
-        spreadSheetId,
-        sheetName,
-        fields,
-        newValuesArray
-      )
-      const { rowToUpdate } = dataToUpdate
-      await updateRow(rowToUpdate)
+    const oldData = await getRowsData(spreadSheetId, sheetName, lookup)
+    if (oldData?.error) {
+      generateError(oldData.error)
+      return
     }
 
-    //Se validan los datos:
-    dataToValidate = {
+    const { rowData = [], headers = [] } = oldData
+    if (!headers.length || !rowData.length) {
+      generateError('Registro no encontrado')
+    }
+
+    // Construir objeto existente a partir de headers -> rowData
+    const mergedObject = {}
+    for (let i = 0; i < headers.length; i++) {
+      mergedObject[headers[i]] = rowData[i]
+    }
+
+    // 3) Traducciones seguras (fallback → "")
+    if (Object.prototype.hasOwnProperty.call(fieldsToUpdate, 'description')) {
+      mergedObject.description_gl = await safeTranslate(
+        fieldsToUpdate.description
+      )
+    }
+    if (Object.prototype.hasOwnProperty.call(fieldsToUpdate, 'role')) {
+      mergedObject.role_gl = await safeTranslate(fieldsToUpdate.role)
+    }
+
+    // 4) Preparar nuevo objeto de datos
+    const newData = {
+      ...mergedObject,
+      ...fieldsToUpdate,
+      collaboratorImage: newImage ? newImage : 'Sin imagen',
+    }
+
+    // 5) Borrar imagen anterior si procede
+    //    Buscamos el valor anterior respetando el índice del header
+    const imgIdx = headers.findIndex((h) => h === 'collaboratorImage')
+    const prevImage =
+      imgIdx >= 0 ? rowData[imgIdx] : mergedObject.collaboratorImage
+    if (
+      prevImage &&
+      prevImage !== 'Sin imagen' &&
+      prevImage !== newData.collaboratorImage
+    ) {
+      try {
+        await cloudinaryDelete(prevImage)
+      } catch (e) {
+        console.warn('No se pudo borrar la imagen anterior:', e?.message)
+      }
+    }
+
+    // 6) Convertir a array siguiendo el orden de headers (evita desordenar columnas)
+    const newValuesArray = headers.map((key) =>
+      Object.prototype.hasOwnProperty.call(newData, key) ? newData[key] : ''
+    )
+
+    // 7) Preparar actualización y escribir
+    const dataToUpdate = await getRowsData(
+      spreadSheetId,
+      sheetName,
+      lookup,
+      newValuesArray
+    )
+    const { rowToUpdate } = dataToUpdate
+    await updateRow(rowToUpdate)
+
+    // 8) Validación final (mantengo tu esquema)
+    const dataToValidate = {
       name: newData.name,
       surname: newData.surname,
       description: newData.description,
       role: newData.role || '',
-      team: team,
+      team: String(isTeam),
     }
-    //Se validan:
     const { error } = validationSchemaNewCollaborator.validate(dataToValidate)
-
     if (error) {
-      error.message = error.details[0].message
+      error.message = error.details?.[0]?.message || 'Datos inválidos'
       generateError(error.message)
     }
 
-    res.send({
+    // 9) Respuesta — siempre con gl string vacío si no hubo traducción
+    return res.send({
       message: 'Datos actualizados',
       data: {
         ...newData,
-        description: { es: newData.description, gl: newData.description_gl },
-        role: { es: newData.role, gl: newData.role_gl },
+        description: {
+          es: newData.description,
+          gl: newData.description_gl ?? '',
+        },
+        role: {
+          es: newData.role ?? '',
+          gl: newData.role_gl ?? '',
+        },
       },
     })
   } catch (error) {
-    next(error)
+    return next(error)
   }
 }
+
 export default updateCollaborator

@@ -1,3 +1,4 @@
+VPS compartido (No acepta instalaciones propias, solo NODE)
 
 Con la extensión de SFTP:
 Ctrl/Cmd+Shift+P → escribe SFTP: Config → Enter. para configurar
