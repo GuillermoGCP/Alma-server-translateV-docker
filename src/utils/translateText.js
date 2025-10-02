@@ -1,5 +1,5 @@
 import executeCommand from './executeCommand.js'
-import { generateError, correctTranslation } from './index.js'
+import { correctTranslation } from './index.js'
 
 async function translateText(text, langPair) {
   let command
@@ -17,8 +17,11 @@ async function translateText(text, langPair) {
 
     return correctTranslation(result)
   } catch (error) {
-    generateError(`Error durante la traducción: ${error.message}`)
+    console.warn(`Apertium translation failed: ${error.message}`)
+    return ''
   }
 }
 
 export default translateText
+
+

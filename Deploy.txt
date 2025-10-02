@@ -13,6 +13,20 @@ Si se cambiaron deps:
 cd ~/www/api
 npx -y pnpm@9 install
 
+Reiniciar la APP:
+cd ~/www/api
+mkdir -p tmp
+touch tmp/restart.txt
+
+
+Comprobar que está arriba:
+# Estado de Passenger (suele funcionar sin sudo)
+passenger-status
+
+# Logs básicos por SSH (si tu plan los expone)
+ls -lah ~/logs
+tail -n 200 -f ~/logs/error.log
+
 
 Panel → Otras aplicaciones → tu app → Logs (arranque/errores).
 Si quieres log mínimo por SSH:
@@ -21,3 +35,25 @@ tail -n 100 -f ~/logs/error.log
 
 Abrir rutas desde consola para testing:
 curl -sS -i "https://api.almalactancia.org/get-filtered-experiences"
+
+OTROS:
+# error del Apache/Passenger + stdout/stderr de tu app
+tail -n 200 -f ~/logs/apache.error.log
+
+# accesos (peticiones)
+tail -n 200 -f ~/logs/apache.log
+
+
+# última petición registrada
+tail -n 1 ~/logs/apache.log
+
+# últimas 20 y seguir en vivo
+tail -n 20 -F ~/logs/apache.log
+
+Ver errores recientes:
+# últimas 50 peticiones con 4xx o 5xx
+grep -E '" (4|5)[0-9]{2} ' ~/logs/apache.log | tail -n 50
+
+
+tail -n 30 ~/logs/apache.log \
+| awk -F\" '{match($1, /\[([^]]+)\]/, t); split($3,s," "); printf "%s | %s | %s | %s bytes\n", t[1], s[1], $2, s[2]}'
