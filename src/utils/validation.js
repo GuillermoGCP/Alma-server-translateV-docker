@@ -2,9 +2,9 @@ import Joi from 'joi'
 
 //Actividades:
 const eventSchema = Joi.object({
-  summary: Joi.string().max(30).required(),
+  summary: Joi.string().max(100).required(),
   status: Joi.string().valid('confirmed', 'cancelled'),
-  description: Joi.string().max(255).optional(),
+  description: Joi.string().max(1000).optional(),
   start: Joi.object({
     dateTime: Joi.date().iso().required(),
     timeZone: Joi.string().optional(),

@@ -28,7 +28,23 @@ const saveExperience = async (req, res, next) => {
       image = response
     }
 
-    const textInGl = await translateTextWithPageBreak(text, 'es-gl')
+    // Intentar traducir al gallego, usar texto original si falla
+    let textInGl = text // Por defecto, usar el mismo texto en español
+    
+    try {
+      const translatedText = await translateTextWithPageBreak(text, 'es-gl')
+      
+      // Verificar que la traducción no está vacía y es diferente del original
+      if (translatedText && translatedText.trim() !== '' && translatedText !== text) {
+        textInGl = translatedText
+      } else {
+        console.warn('Traducción vacía o igual al original, usando texto en español')
+      }
+    } catch (error) {
+      console.error('Error en traducción automática, usando texto original:', error.message)
+      // textInGl ya está asignado al texto original
+    }
+
     const dataToInsert = [[id, text, textInGl, image]]
 
     const sheetName = 'Experiencias'

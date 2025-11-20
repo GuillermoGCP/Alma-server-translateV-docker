@@ -6,6 +6,7 @@ import {
   checkSubscription,
   checkAllSubscriptions,
   checkAccesCode,
+  getPartners,
 } from '../controllers/index.js'
 
 const router = express.Router()
@@ -16,5 +17,6 @@ router.post('/unsubscribe-partnership', unsuscribePartnership)
 router.post('/check-subscription', checkSubscription)
 router.post('/check-access-code', checkAccesCode)
 router.get('/check-all-subscriptions', checkAllSubscriptions)
+router.get('/get-partners', getPartners)
 
 export default router

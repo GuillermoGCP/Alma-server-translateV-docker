@@ -7,6 +7,7 @@ import parseCustomDateToISO from './parseCustomDateToISO .js'
 import groupDataById from './groupDataById.js'
 import normalizeFieldName from './normalizeFieldName.js'
 import unnormalizeFieldName from './unnormalizeFieldName.js'
+import normalizeEventPayload from './normalizeEventPayload.js'
 import generateCode from './generateCode.js'
 import isSubscriptionExpired from './isSuscriptionExpired.js'
 import setupCronJobs from './cronJobs.js'
@@ -44,6 +45,7 @@ export {
   groupDataById,
   normalizeFieldName,
   unnormalizeFieldName,
+  normalizeEventPayload,
   validationSchemaNewExperiences,
   validationUpdateExperiences,
   generateCode,

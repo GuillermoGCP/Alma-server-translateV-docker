@@ -27,6 +27,11 @@ const formSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  eventId: {
+    type: String,
+    default: '',
+    trim: true,
+  },
   fields: [fieldSchema],
 })
 

@@ -4,37 +4,57 @@ import { generateError, unnormalizeFieldName } from '../../utils/index.js'
 const getPublishedForm = async (req, res, next) => {
   try {
     const jsonNumber = req.params.jsonNumber
+    const eventId = req.query?.eventId ? String(req.query.eventId) : ''
 
-    if (!jsonNumber) {
+    if (!jsonNumber && !eventId) {
       generateError('El número de publicación es obligatorio.')
     }
 
-    const formFromData = await FormModel.findOne({
-      publishNumber: jsonNumber,
-    })
+    let formFromData = null
+
+    if (eventId) {
+      formFromData = await FormModel.findOne({ eventId })
+    }
+
+    if (!formFromData && jsonNumber) {
+      formFromData = await FormModel.findOne({
+        publishNumber: jsonNumber,
+      })
+    }
 
     if (!formFromData) {
-      console.log(
-        'Formulario no encontrado para el número de publicación dado.'
-      )
+      return res.send({
+        message: 'Formulario publicado obtenido',
+        form: {},
+      })
     }
+
+    const formNameEs = unnormalizeFieldName(formFromData.formName.es)
+    const formNameGlRaw = unnormalizeFieldName(formFromData.formName.gl)
+    const formNameGl = formNameGlRaw || formNameEs
+
     const normalizedForm = {
-      ...formFromData,
+      formId: formFromData.formId,
+      publishNumber: formFromData.publishNumber,
+      eventId: formFromData.eventId || '',
       formName: {
-        es: unnormalizeFieldName(formFromData.formName.es),
-        gl: unnormalizeFieldName(formFromData.formName.gl),
+        es: formNameEs,
+        gl: formNameGl,
       },
       fields: formFromData.fields.map((field) => {
         if (field.type === 'select') {
           return field
-        } else
-          return {
-            type: field.type,
-            label: {
-              es: unnormalizeFieldName(field.label.es),
-              gl: unnormalizeFieldName(field.label.gl),
-            },
-          }
+        }
+        const labelEs = unnormalizeFieldName(field.label.es)
+        const labelGlRaw = unnormalizeFieldName(field.label.gl)
+
+        return {
+          type: field.type,
+          label: {
+            es: labelEs,
+            gl: labelGlRaw || labelEs,
+          },
+        }
       }),
     }
 
@@ -43,8 +63,9 @@ const getPublishedForm = async (req, res, next) => {
       form: normalizedForm,
     })
   } catch (error) {
-    // next(error)
+    next(error)
   }
 }
 
 export default getPublishedForm
+

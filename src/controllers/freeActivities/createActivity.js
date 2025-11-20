@@ -7,6 +7,7 @@ import {
   generateError,
   eventSchema,
   translateTextWithPageBreak,
+  normalizeEventPayload,
 } from '../../utils/index.js'
 import { formatDate } from '../../utils/index.js'
 import cloudinaryUpload from '../cloudinary/uploadImage.js'
@@ -14,9 +15,20 @@ import cloudinaryUpload from '../cloudinary/uploadImage.js'
 const createActivity = async (req, res, next) => {
   try {
     const sheetId = process.env.SPREADSHEET_ID
+    const payload = normalizeEventPayload(req.body)
 
-    const { summary, description, start, end, location, extendedProperties } =
-      req.body
+    const {
+      summary,
+      description,
+      start,
+      end,
+      location,
+      extendedProperties,
+      reminders,
+      status,
+      visibility,
+      attendees,
+    } = payload
 
     let accessDataSheet
     if (extendedProperties.private.access === 'free') {
@@ -28,7 +40,18 @@ const createActivity = async (req, res, next) => {
     const formattedEndtDate = formatDate(end.dateTime)
 
     //Validación de datos:
-    const { error } = eventSchema.validate(req.body)
+    const { error } = eventSchema.validate({
+      summary,
+      description,
+      start,
+      end,
+      location,
+      extendedProperties,
+      reminders,
+      status,
+      visibility,
+      attendees,
+    })
 
     if (error) {
       error.message = error.details[0].message
@@ -45,11 +68,11 @@ const createActivity = async (req, res, next) => {
 
     //Añadir el evento al calendario:
     const response = await addEvent({
-      ...req.body,
+      ...payload,
       extendedProperties: {
-        ...req.body.extendedProperties,
+        ...extendedProperties,
         private: {
-          ...req.body.extendedProperties.private,
+          ...extendedProperties.private,
           image: image,
           glDescription: await translateTextWithPageBreak(description, 'es-gl'),
           glSummary: await translateTextWithPageBreak(summary, 'es-gl'),

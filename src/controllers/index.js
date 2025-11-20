@@ -57,6 +57,7 @@ import unsuscribePartnership from './partners/unsuscribePartnership.js'
 import checkSubscription from './partners/checkSubscription.js'
 import checkAllSubscriptions from './partners/checkAllSubscriptions.js'
 import checkAccesCode from './partners/checkAccesCode.js'
+import getPartners from './partners/getPartners.js'
 
 export {
   createActivity,
@@ -107,4 +108,5 @@ export {
   checkSubscription,
   checkAllSubscriptions,
   checkAccesCode,
+  getPartners,
 }

@@ -49,13 +49,31 @@ const updateExperience = async (req, res, next) => {
 
     const experienceFromBack = rowData
 
+    // Traducir texto al gallego con manejo de errores
+    let translatedText = experienceFromBack[2] // Usar traducción existente por defecto
+    
+    if (experienceFromFront.text) {
+      try {
+        const newTranslation = await translateTextWithPageBreak(experienceFromFront.text, 'es-gl')
+        
+        // Verificar que la traducción es válida
+        if (newTranslation && newTranslation.trim() !== '' && newTranslation !== experienceFromFront.text) {
+          translatedText = newTranslation
+        } else {
+          console.warn('Traducción vacía o igual al original, usando texto en español')
+          translatedText = experienceFromFront.text
+        }
+      } catch (error) {
+        console.error('Error en traducción automática, usando texto original:', error.message)
+        translatedText = experienceFromFront.text
+      }
+    }
+
     // Datos actualizados:
     const updatedExperience = [
       id,
       experienceFromFront.text || experienceFromBack[1],
-      experienceFromFront.text
-        ? await translateTextWithPageBreak(experienceFromFront.text, 'es-gl')
-        : experienceFromBack[2],
+      translatedText,
       image || experienceFromBack[3],
     ]
     const data = await getRowsData(

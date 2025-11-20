@@ -5,36 +5,42 @@ const checkIsPublished = async (req, res, next) => {
     const jsonNumber = req.params.jsonNumber.toString()
     const formId = req.params.formId
     const checkIsFile = req.params.checkIsFile
-    let jsonData
-    let isPublished
+    const eventId = req.query?.eventId ? String(req.query.eventId) : ''
 
-    jsonData = await Form.findOne({
-      publishNumber: jsonNumber,
-    })
+    let jsonData = null
 
-    if (!checkIsFile) {
-      if (jsonData && jsonData.formId === formId) {
-        console.log('El formId coincide.')
-        isPublished = true
-      } else {
-        console.log('El formId no coincide.')
-        isPublished = false
-      }
+    if (eventId) {
+      jsonData = await Form.findOne({ eventId })
+    }
+
+    if (!jsonData) {
+      jsonData = await Form.findOne({
+        publishNumber: jsonNumber,
+      })
+    }
+
+    if (!jsonData) {
+      return res.send({
+        isPublished: false,
+        publishedFormId: null,
+        eventId: null,
+      })
+    }
+
+    let isPublished = false
+
+    if (eventId) {
+      isPublished = jsonData.eventId === eventId
+    } else if (!checkIsFile) {
+      isPublished = jsonData.formId === formId
     } else {
-      try {
-        if (Object.keys(jsonData).length === 0) {
-          isPublished = false
-        } else {
-          isPublished = true
-        }
-      } catch (error) {
-        console.error('No hay formulario asociado')
-      }
+      isPublished = true
     }
 
     res.send({
-      isPublished: isPublished,
-      publishedFormId: jsonData?.formId ? jsonData.formId : null,
+      isPublished,
+      publishedFormId: jsonData.formId ?? null,
+      eventId: jsonData.eventId ?? null,
     })
   } catch (error) {
     console.log(error)
