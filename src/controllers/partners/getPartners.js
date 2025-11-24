@@ -8,7 +8,30 @@ const getPartners = async (req, res, next) => {
     // rows[0] should contain headers. Build objects for the rest.
     const [headers, ...dataRows] = rows
     const normalizedHeaders =
-      headers?.map((h) => h?.toString().trim().toLowerCase()) || []
+      headers?.map((h) => {
+        const raw = h?.toString().trim().toLowerCase() || ''
+        const simplified = raw
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9]/g, '')
+
+        if (
+          simplified.includes('nombre') ||
+          simplified.includes('nome') ||
+          simplified.includes('apelid')
+        )
+          return 'nombre'
+        if (simplified.includes('email') || simplified.includes('correo'))
+          return 'email'
+        if (
+          simplified.includes('tel') ||
+          simplified.includes('movil') ||
+          simplified.includes('mobile')
+        )
+          return 'telefono'
+
+        return simplified || raw || ''
+      }) || []
 
     const partners = dataRows.map((row) => {
       const record = {}
