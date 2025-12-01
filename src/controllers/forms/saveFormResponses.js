@@ -13,7 +13,6 @@ import {
   formatDate,
   generateError,
 } from '../../utils/index.js'
-
 const saveFormResponses = async (req, res, next) => {
   try {
     let { sheetName } = req.params
@@ -21,12 +20,10 @@ const saveFormResponses = async (req, res, next) => {
     const formResponses = req.body
     const spreadsheetIdForms = process.env.SPREADSHEET_ID_FORMS
     const spreadsheetId = process.env.SPREADSHEET_ID
-
     const { nextEmptyRow, rows, headers } = await allSheetData(
       spreadsheetIdForms,
       sheetName
     )
-
     await Promise.all(
       Object.entries(formResponses)
         .slice(0, -1)
@@ -37,25 +34,28 @@ const saveFormResponses = async (req, res, next) => {
             normalizeFieldName(key),
             value
           )
-
-          // Inserto las respuestas en las celdas correspondientes:
-          await updateCell(
-            spreadsheetIdForms,
-            sheetName,
-            fieldColumnIndex,
-            0,
-            value,
-            nextEmptyRow
-          )
+          if (fieldColumnIndex !== -1) {
+            // Inserto las respuestas en las celdas correspondientes:
+            await updateCell(
+              spreadsheetIdForms,
+              sheetName,
+              fieldColumnIndex,
+              0,
+              value,
+              nextEmptyRow
+            )
+          } else {
+            console.warn(
+              `Omitiendo guardado de campo '${key}' porque no existe la columna en la hoja '${sheetName}'.`
+            )
+          }
         })
     )
     try {
       //Lógica para guardar los usuarios a la hoja de usuarios:
       const regex =
         /^(correo(_electr[oó]nico)?|email|direcci[oó]n(_de)?_correo)$/i
-
       const key = Object.keys(formResponses).find((k) => regex.test(k))
-
       //Si existe el campo correo_electrónico (y variables):
       if (key) {
         //Compruebo si ya está en la hoja de usuarios:
@@ -63,13 +63,17 @@ const saveFormResponses = async (req, res, next) => {
           spreadsheetId,
           'Usuarios'
         )
-        const { valueRowIndex } = await getCoordinates(
+        const { valueRowIndex, fieldColumnIndex } = await getCoordinates(
           rows,
           headers,
           'email',
           formResponses[key]
         )
-        if (valueRowIndex === -1) {
+        if (fieldColumnIndex === -1) {
+          console.warn(
+            `Columna 'email' no encontrada en hoja 'Usuarios'. Omitiendo actualización de usuario.`
+          )
+        } else if (valueRowIndex === -1) {
           const values = [
             [
               formatDate(new Date().toISOString()),
@@ -86,16 +90,13 @@ const saveFormResponses = async (req, res, next) => {
             spreadsheetId,
             range: updateRowRange,
           })
-
           rowData = rowData.data.values[0]
           const columnIndex = rowData.length + 1
-
           const range = `Usuarios!${getColumnLetter(
             columnIndex
           )}${valueRowIndex}:${getColumnLetter(
             rowData.length + 2
           )}${valueRowIndex}`
-
           const rowToUpdate = {
             spreadsheetId,
             range,
@@ -106,14 +107,12 @@ const saveFormResponses = async (req, res, next) => {
               ],
             },
           }
-
           await updateRow(rowToUpdate)
         }
       }
     } catch (error) {
       generateError(error)
     }
-
     res.status(200).json({
       message: 'Respuestas del formulario guardadas exitosamente',
     })
@@ -121,5 +120,4 @@ const saveFormResponses = async (req, res, next) => {
     next(error)
   }
 }
-
 export default saveFormResponses
