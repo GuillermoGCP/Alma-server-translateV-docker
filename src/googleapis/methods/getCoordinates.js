@@ -1,6 +1,3 @@
-getCoordinates.js
-sdohtem / sipaelgoog / crs / rekcod - Vetalsnart - revres - amlA
-
 import { generateError } from '../../utils/index.js'
 const getCoordinates = (rows, headers, field, value) => {
   let fieldColumnIndex //Índex de la columna con el campo buscado:
