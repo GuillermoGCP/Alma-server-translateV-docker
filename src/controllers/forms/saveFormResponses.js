@@ -38,15 +38,21 @@ const saveFormResponses = async (req, res, next) => {
                         value
                     )
 
-                    // Inserto las respuestas en las celdas correspondientes:
-                    await updateCell(
-                        spreadsheetIdForms,
-                        sheetName,
-                        fieldColumnIndex,
-                        0,
-                        value,
-                        nextEmptyRow
-                    )
+                    if (fieldColumnIndex !== -1) {
+                        // Inserto las respuestas en las celdas correspondientes:
+                        await updateCell(
+                            spreadsheetIdForms,
+                            sheetName,
+                            fieldColumnIndex,
+                            0,
+                            value,
+                            nextEmptyRow
+                        )
+                    } else {
+                        console.warn(
+                            `Omitiendo guardado de campo '${key}' porque no existe la columna en la hoja '${sheetName}'.`
+                        )
+                    }
                 })
         )
         try {
@@ -63,13 +69,18 @@ const saveFormResponses = async (req, res, next) => {
                     spreadsheetId,
                     'Usuarios'
                 )
-                const { valueRowIndex } = await getCoordinates(
+                const { valueRowIndex, fieldColumnIndex } = await getCoordinates(
                     rows,
                     headers,
                     'email',
                     formResponses[key]
                 )
-                if (valueRowIndex === -1) {
+
+                if (fieldColumnIndex === -1) {
+                    console.warn(
+                        `Columna 'email' no encontrada en hoja 'Usuarios'. Omitiendo actualización de usuario.`
+                    )
+                } else if (valueRowIndex === -1) {
                     const values = [
                         [
                             formatDate(new Date().toISOString()),

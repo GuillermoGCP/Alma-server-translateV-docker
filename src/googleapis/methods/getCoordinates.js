@@ -10,7 +10,7 @@ const getCoordinates = (rows, headers, field, value) => {
             fieldColumnIndex = headers.indexOf(field)
 
             if (fieldColumnIndex === -1) {
-                generateError('No se ha encontrado el campo.')
+                console.warn(`Campo '${field}' no encontrado en los headers.`)
             }
         }
 
