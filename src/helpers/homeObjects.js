@@ -1,5 +1,21 @@
 import { translateText, translateTextWithPageBreak } from '../utils/index.js'
 
+const processResources = async (resources) => {
+  if (!resources || !Array.isArray(resources)) return []
+  return await Promise.all(
+    resources.map(async (item) => {
+      const titleEs = item?.title?.es || ''
+      return {
+        title: {
+          es: titleEs,
+          gl: await translateTextWithPageBreak(titleEs, 'es-gl'),
+        },
+        link: item.link || '',
+      }
+    })
+  )
+}
+
 const newHomeObjectCreator = async (imageHome, logo, data) => {
   return {
     home: {
@@ -25,56 +41,33 @@ const newHomeObjectCreator = async (imageHome, logo, data) => {
       logo: logo,
     },
     library: {
-      lactationResources: data.library.lactationResources
-        ? await Promise.all(
-            data.library.lactationResources.map(async (item) => {
-              return await translateTextWithPageBreak(item)
-            })
-          )
-        : {},
+      lactationResources: await processResources(
+        data.library.lactationResources
+      ),
       lactationBooks: data.library.lactationBooks
         ? data.library.lactationBooks
         : {},
-      pregnancyResources: data.library.pregnancyResources
-        ? await Promise.all(
-            data.library.pregnancyResources.map((item) => {
-              return translateTextWithPageBreak(item)
-            })
-          )
-        : {},
+      pregnancyResources: await processResources(
+        data.library.pregnancyResources
+      ),
       pregnancyBooks: data.library.pregnancyBooks
         ? data.library.pregnancyBooks
         : {},
-      parentingResources: data.library.parentingResources
-        ? await Promise.all(
-            data.library.parentingResources.map((item) => {
-              return translateTextWithPageBreak(item)
-            })
-          )
-        : {},
+      parentingResources: await processResources(
+        data.library.parentingResources
+      ),
       parentingBooks: data.library.parentingBooks
         ? data.library.parentingBooks
         : {},
-      nutritionBlogs: data.library.nutritionBlogs
-        ? await Promise.all(
-            data.library.nutritionBlogs.map((item) => {
-              return translateTextWithPageBreak(item)
-            })
-          )
-        : {},
+      nutritionBlogs: await processResources(data.library.nutritionBlogs),
       nutritionBooks: data.library.nutritionBooks
         ? data.library.nutritionBooks
         : {},
-      archiveBlogs: data.library.archiveBlogs
-        ? await Promise.all(
-            data.library.archiveBlogs.map((item) => {
-              return translateTextWithPageBreak(item)
-            })
-          )
-        : {},
+      archiveBlogs: await processResources(data.library.archiveBlogs),
     },
   }
 }
+
 const combinedHomeObjectCreator = async (imageHome, logo, oldData, newData) => {
   return {
     home: {
@@ -105,51 +98,31 @@ const combinedHomeObjectCreator = async (imageHome, logo, oldData, newData) => {
     },
     library: {
       lactationResources: newData.library?.lactationResources
-        ? await Promise.all(
-            newData.library.lactationResources.map((item) => {
-              return translateTextWithPageBreak(item)
-            })
-          )
+        ? await processResources(newData.library.lactationResources)
         : oldData.library.lactationResources,
       lactationBooks: newData.library?.lactationBooks
         ? newData.library.lactationBooks
         : oldData.library.lactationBooks,
       pregnancyResources: newData.library?.pregnancyResources
-        ? await Promise.all(
-            newData.library.pregnancyResources.map((item) => {
-              return translateTextWithPageBreak(item)
-            })
-          )
+        ? await processResources(newData.library.pregnancyResources)
         : oldData.library.pregnancyResources,
       pregnancyBooks: newData.library?.pregnancyBooks
         ? newData.library.pregnancyBooks
         : oldData.library.pregnancyBooks,
       parentingResources: newData.library?.parentingResources
-        ? await Promise.all(
-            newData.library.parentingResources.map((item) => {
-              return translateTextWithPageBreak(item)
-            })
-          )
+        ? await processResources(newData.library.parentingResources)
         : oldData.library.parentingResources,
       parentingBooks: newData.library?.parentingBooks
         ? newData.library.parentingBooks
         : oldData.library.parentingBooks,
       nutritionBlogs: newData.library?.nutritionBlogs
-        ? await Promise.all(
-            newData.library.nutritionBlogs.map((item) => {
-              return translateTextWithPageBreak(item)
-            })
-          )
+        ? await processResources(newData.library.nutritionBlogs)
         : oldData.library.nutritionBlogs,
       nutritionBooks: newData.library?.nutritionBooks
         ? newData.library.nutritionBooks
         : oldData.library.nutritionBooks,
       archiveBlogs: newData.library?.archiveBlogs
-        ? await Promise.all(
-            newData.library.archiveBlogs.map((item) => {
-              return translateTextWithPageBreak(item)
-            })
-          )
+        ? await processResources(newData.library.archiveBlogs)
         : oldData.library.archiveBlogs,
     },
   }
