@@ -5,16 +5,13 @@ const lactationResourceSchema = new mongoose.Schema({
   title: {
     es: {
       type: String,
-      required: true,
     },
     gl: {
       type: String,
-      required: true,
     },
   },
   link: {
     type: String,
-    required: true,
   },
 })
 
@@ -23,16 +20,13 @@ const pregnancyResourceSchema = new mongoose.Schema({
   title: {
     es: {
       type: String,
-      required: true,
     },
     gl: {
       type: String,
-      required: true,
     },
   },
   link: {
     type: String,
-    required: true,
   },
 })
 
@@ -41,16 +35,13 @@ const parentingResourceSchema = new mongoose.Schema({
   title: {
     es: {
       type: String,
-      required: true,
     },
     gl: {
       type: String,
-      required: true,
     },
   },
   link: {
     type: String,
-    required: true,
   },
 })
 
@@ -59,16 +50,13 @@ const nutritionBlogSchema = new mongoose.Schema({
   title: {
     es: {
       type: String,
-      required: true,
     },
     gl: {
       type: String,
-      required: true,
     },
   },
   link: {
     type: String,
-    required: true,
   },
 })
 
@@ -77,16 +65,13 @@ const archiveBlogSchema = new mongoose.Schema({
   title: {
     es: {
       type: String,
-      required: true,
     },
     gl: {
       type: String,
-      required: true,
     },
   },
   link: {
     type: String,
-    required: true,
   },
 })
 
@@ -140,22 +125,18 @@ const homeSchema = new mongoose.Schema({
     lactationResources: [lactationResourceSchema],
     lactationBooks: {
       type: String,
-      required: true,
     },
     pregnancyResources: [pregnancyResourceSchema],
     pregnancyBooks: {
       type: String,
-      required: true,
     },
     parentingBooks: {
       type: String,
-      required: true,
     },
     parentingResources: [parentingResourceSchema],
     nutritionBlogs: [nutritionBlogSchema],
     nutritionBooks: {
       type: String,
-      required: true,
     },
     archiveBlogs: [archiveBlogSchema],
   },

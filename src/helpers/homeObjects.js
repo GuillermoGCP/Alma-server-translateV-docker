@@ -4,17 +4,20 @@ const processResources = async (resources) => {
   if (!resources || !Array.isArray(resources)) return []
   return await Promise.all(
     resources.map(async (item) => {
-      const titleEs = item?.title?.es || ''
+      const titleEs = item?.title?.es ?? ''
       return {
         title: {
           es: titleEs,
           gl: await translateTextWithPageBreak(titleEs, 'es-gl'),
         },
-        link: item.link || '',
+        link: item?.link ?? '',
       }
     })
   )
 }
+
+const hasOwn = (obj, key) =>
+  obj && Object.prototype.hasOwnProperty.call(obj, key)
 
 const newHomeObjectCreator = async (imageHome, logo, data) => {
   return {
@@ -44,25 +47,29 @@ const newHomeObjectCreator = async (imageHome, logo, data) => {
       lactationResources: await processResources(
         data.library.lactationResources
       ),
-      lactationBooks: data.library.lactationBooks
-        ? data.library.lactationBooks
-        : {},
+      lactationBooks:
+        typeof data.library?.lactationBooks === 'string'
+          ? data.library.lactationBooks
+          : '',
       pregnancyResources: await processResources(
         data.library.pregnancyResources
       ),
-      pregnancyBooks: data.library.pregnancyBooks
-        ? data.library.pregnancyBooks
-        : {},
+      pregnancyBooks:
+        typeof data.library?.pregnancyBooks === 'string'
+          ? data.library.pregnancyBooks
+          : '',
       parentingResources: await processResources(
         data.library.parentingResources
       ),
-      parentingBooks: data.library.parentingBooks
-        ? data.library.parentingBooks
-        : {},
+      parentingBooks:
+        typeof data.library?.parentingBooks === 'string'
+          ? data.library.parentingBooks
+          : '',
       nutritionBlogs: await processResources(data.library.nutritionBlogs),
-      nutritionBooks: data.library.nutritionBooks
-        ? data.library.nutritionBooks
-        : {},
+      nutritionBooks:
+        typeof data.library?.nutritionBooks === 'string'
+          ? data.library.nutritionBooks
+          : '',
       archiveBlogs: await processResources(data.library.archiveBlogs),
     },
   }
@@ -97,31 +104,31 @@ const combinedHomeObjectCreator = async (imageHome, logo, oldData, newData) => {
       logo: logo,
     },
     library: {
-      lactationResources: newData.library?.lactationResources
+      lactationResources: hasOwn(newData.library, 'lactationResources')
         ? await processResources(newData.library.lactationResources)
         : oldData.library.lactationResources,
-      lactationBooks: newData.library?.lactationBooks
+      lactationBooks: hasOwn(newData.library, 'lactationBooks')
         ? newData.library.lactationBooks
         : oldData.library.lactationBooks,
-      pregnancyResources: newData.library?.pregnancyResources
+      pregnancyResources: hasOwn(newData.library, 'pregnancyResources')
         ? await processResources(newData.library.pregnancyResources)
         : oldData.library.pregnancyResources,
-      pregnancyBooks: newData.library?.pregnancyBooks
+      pregnancyBooks: hasOwn(newData.library, 'pregnancyBooks')
         ? newData.library.pregnancyBooks
         : oldData.library.pregnancyBooks,
-      parentingResources: newData.library?.parentingResources
+      parentingResources: hasOwn(newData.library, 'parentingResources')
         ? await processResources(newData.library.parentingResources)
         : oldData.library.parentingResources,
-      parentingBooks: newData.library?.parentingBooks
+      parentingBooks: hasOwn(newData.library, 'parentingBooks')
         ? newData.library.parentingBooks
         : oldData.library.parentingBooks,
-      nutritionBlogs: newData.library?.nutritionBlogs
+      nutritionBlogs: hasOwn(newData.library, 'nutritionBlogs')
         ? await processResources(newData.library.nutritionBlogs)
         : oldData.library.nutritionBlogs,
-      nutritionBooks: newData.library?.nutritionBooks
+      nutritionBooks: hasOwn(newData.library, 'nutritionBooks')
         ? newData.library.nutritionBooks
         : oldData.library.nutritionBooks,
-      archiveBlogs: newData.library?.archiveBlogs
+      archiveBlogs: hasOwn(newData.library, 'archiveBlogs')
         ? await processResources(newData.library.archiveBlogs)
         : oldData.library.archiveBlogs,
     },
