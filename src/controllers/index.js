@@ -11,8 +11,6 @@ import cancelEvent from './calendar/cancelEvent.js'
 
 import saveMessage from './contact/saveMessage.js'
 
-import generateCaptcha from './captcha/generateCaptcha.js'
-import validateCaptcha from './captcha/validateCaptcha.js'
 
 import googleSignIn from './googleSignIn/googleSignIn.js'
 import checkSession from './googleSignIn/checkSession.js'
@@ -69,8 +67,6 @@ export {
   listEventsController,
   saveMessage,
   getEventController,
-  generateCaptcha,
-  validateCaptcha,
   googleSignIn,
   checkSession,
   logout,

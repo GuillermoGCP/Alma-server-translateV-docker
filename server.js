@@ -4,13 +4,14 @@ import { join } from 'path'
 import conectDb from './src/Database/config.js'
 import cors from 'cors'
 import { sessionMiddleware } from './src/middlewares/index.js'
+import { connectRedis } from './redisClient.js'
 import {
   activities,
   login,
   calendar,
   collaborator,
   contact,
-  captcha,
+
   forms,
   experiences,
   instagram,
@@ -47,8 +48,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
-//Connectar a Mongo:
+//Connectar a Mongo y Redis:
 conectDb()
+connectRedis()
 
 //Middlewares de aplicación:
 app.use(express.json()) //Para manejar application/json en las solicitudes.
@@ -72,7 +74,7 @@ app.use(login)
 app.use(calendar)
 app.use(collaborator)
 app.use(contact)
-app.use(captcha)
+
 app.use(forms)
 app.use(experiences)
 app.use(instagram)
